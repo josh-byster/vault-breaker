@@ -1,0 +1,20 @@
+.box {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  margin: 0px 2px;
+  border-radius: 2px;
+  border: 1px solid black;
+}
+
+.correct {
+  background: #27ae60;
+}
+
+.incorrect-spot {
+  background: #2980b9;
+}
+
+.incorrect {
+  background: #fff;
+}
