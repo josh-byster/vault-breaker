@@ -1,0 +1,7 @@
+{
+  "name": "ionic-vaultbreaker",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
