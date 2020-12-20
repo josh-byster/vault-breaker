@@ -4,6 +4,7 @@ import { GuessList, Guess } from "./GuessList";
 import InputBar from "./InputBar";
 import NumberPad from "./NumberPad";
 import { NUMBER_LENGTH } from "./constants";
+import { computeGuessForNumber, generateAnswer } from "./utilities";
 
 interface ContainerProps {
   name: string;
@@ -12,9 +13,7 @@ interface ContainerProps {
 const GameController: React.FC<ContainerProps> = ({ name }) => {
   const [numbers, setNumbers] = useState<number[]>([]);
   const [guesses, setGuesses] = useState<Guess[]>([]);
-  const [answer, ] = useState<number[]>(() =>
-    generateAnswer(NUMBER_LENGTH)
-  );
+  const [answer] = useState<number[]>(() => generateAnswer(NUMBER_LENGTH));
 
   const appendNumber = useCallback(
     (value: number): void => {
@@ -50,47 +49,21 @@ const GameController: React.FC<ContainerProps> = ({ name }) => {
   const clearNumbers = () => setNumbers([]);
 
   return (
-    <div className="container">
-      <br />
-      <InputBar values={numbers} total={NUMBER_LENGTH}></InputBar>
-      <NumberPad
-        numbers={numbers}
-        numberAdded={appendNumber}
-        backspaceClicked={deleteNumber}
-        submitClicked={submitClicked}
-      ></NumberPad>
-      <GuessList items={guesses}></GuessList>
+    <div style={{height:"100%"}}>
+      <div style={{width:"50%", height:"100%", display:"inline-block" , verticalAlign:"top", textAlign: "center"}}>
+        <InputBar values={numbers} total={NUMBER_LENGTH}></InputBar>
+        <NumberPad
+          numbers={numbers}
+          numberAdded={appendNumber}
+          backspaceClicked={deleteNumber}
+          submitClicked={submitClicked}
+        ></NumberPad>
+      </div>
+      <div style={{width:"50%", height:"100%",display:"inline-block" , verticalAlign:"top"}}>
+        <GuessList items={guesses}></GuessList>
+      </div>
     </div>
   );
 };
 
-const computeGuessForNumber = (numbers: number[], actual: number[]): Guess => {
-  let correctSpot = 0;
-  let incorrectSpot = 0;
-  let incorrect = 0;
-  for (let i = 0; i < numbers.length; i++) {
-    if (numbers[i] === actual[i]) {
-      correctSpot++;
-    } else if (actual.indexOf(numbers[i]) !== -1) {
-      incorrectSpot++;
-    } else {
-      incorrect++;
-    }
-  }
-  return {
-    number: parseInt(numbers.join("")),
-    correctSpot,
-    incorrectSpot,
-    incorrect,
-  };
-};
-
-const generateAnswer = (length: number): number[] => {
-  let arr = [];
-  while (arr.length < length) {
-    let rand = Math.floor(Math.random() * 10) + 1;
-    if (arr.indexOf(rand) === -1) arr.push(rand);
-  }
-  return arr;
-};
 export default GameController;

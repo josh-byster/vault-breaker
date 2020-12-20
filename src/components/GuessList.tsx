@@ -1,8 +1,4 @@
-import {
-  IonItem,
-  IonLabel,
-  IonList,
-} from "@ionic/react";
+import { IonItem, IonLabel, IonList } from "@ionic/react";
 import React from "react";
 import "./GuessList.css";
 
@@ -11,7 +7,7 @@ interface ListProps {
 }
 
 interface Guess {
-  number: number;
+  numbers: number[];
   correctSpot: number;
   incorrectSpot: number;
   incorrect: number;
@@ -19,15 +15,15 @@ interface Guess {
 const GuessList: React.FC<ListProps> = ({ items }) => {
   const boxForGuess = (guess: Guess): JSX.Element => {
     return (
-      <div>
-        {[...Array(guess.correctSpot)].map((_,idx) => (
+      <div className="box-container">
+        {[...Array(guess.correctSpot)].map((_, idx) => (
           <span className="box correct" key={idx}></span>
         ))}
 
-{[...Array(guess.incorrectSpot)].map((_,idx) => (
+        {[...Array(guess.incorrectSpot)].map((_, idx) => (
           <span className="box incorrect-spot" key={idx}></span>
         ))}
-        {[...Array(guess.incorrect)].map((_,idx) => (
+        {[...Array(guess.incorrect)].map((_, idx) => (
           <span className="box incorrect" key={idx}></span>
         ))}
       </div>
@@ -39,8 +35,7 @@ const GuessList: React.FC<ListProps> = ({ items }) => {
         <IonItem key={idx}>
           <IonLabel>
             {boxForGuess(item)}
-            Number: {item.number}, correct spot: {item.correctSpot}, incorrect
-            spot: {item.incorrectSpot}, incorrect: {item.incorrect}{" "}
+            <div className="guess-number-label">{item.numbers.join("")}</div>
           </IonLabel>
         </IonItem>
       ))}
