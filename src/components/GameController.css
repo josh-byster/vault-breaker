@@ -23,6 +23,18 @@
   text-decoration: none;
 }
 
-ion-content {
-  /* --overflow: hidden; */
+.game-col {
+  width: 50%;
+  height: 100%;
+  display: inline-block;
+  vertical-align: top;
+}
+
+#guess-list-col {
+  padding-right: 20px;
+  overflow-y: scroll;
+}
+
+#input-col {
+  text-align: center;
 }

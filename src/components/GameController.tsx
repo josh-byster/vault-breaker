@@ -6,6 +6,7 @@ import NumberPad from "./NumberPad";
 import { NUMBER_LENGTH } from "./constants";
 import { computeGuessForNumber, generateAnswer } from "./utilities";
 import {
+  IonAlert,
   IonButton,
   IonButtons,
   IonContent,
@@ -21,12 +22,12 @@ const GameController: React.FC = () => {
   const [answer, setAnswer] = useState<number[]>(() =>
     generateAnswer(NUMBER_LENGTH)
   );
-
+  const [showGameAlert, setShowGameAlert] = useState<boolean>(false);
+  const [startTime, setStartTime] = useState<Date>(new Date());
+  console.log(answer);
   const appendNumber = useCallback(
     (value: number): void => {
       setNumbers((nums) => {
-        console.log("HERE!");
-        console.log(nums);
         if (nums.length < NUMBER_LENGTH) {
           return [...nums, value];
         }
@@ -40,6 +41,9 @@ const GameController: React.FC = () => {
 
   const submitClicked = useCallback(() => {
     if (numbers.length !== NUMBER_LENGTH) return;
+    if (numbers.join("") === answer.join("")) {
+      setShowGameAlert(true);
+    }
     setGuesses((guesses) => {
       return [...guesses, computeGuessForNumber(numbers, answer)];
     });
@@ -66,7 +70,11 @@ const GameController: React.FC = () => {
     clearNumbers();
     setGuesses([]);
     setAnswer(generateAnswer(NUMBER_LENGTH));
+    setStartTime(new Date());
   };
+
+  const getSecondsElapsed = () =>
+    ((new Date() as any) - (startTime as any)) / 1000;
 
   return (
     <IonPage>
@@ -79,28 +87,24 @@ const GameController: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen forceOverscroll={false}>
+        <IonAlert
+          isOpen={showGameAlert}
+          onDidDismiss={() => {
+            setShowGameAlert(false);
+            resetGame();
+          }}
+          cssClass="my-custom-class"
+          header={"You Won!"}
+          message={`You completed the game in ${getSecondsElapsed()} seconds and took ${
+            guesses.length + 1
+          } attempts.`}
+          buttons={["OK"]}
+        />
         <div style={{ height: "100%", paddingTop: "30px" }}>
-          <div
-            style={{
-              width: "50%",
-              height: "100%",
-              paddingRight: "20px",
-              display: "inline-block",
-              verticalAlign: "top",
-              overflowY: "scroll",
-            }}
-          >
+          <div className="game-col" id="guess-list-col">
             <GuessList items={guesses}></GuessList>
           </div>
-          <div
-            style={{
-              width: "50%",
-              height: "100%",
-              display: "inline-block",
-              verticalAlign: "top",
-              textAlign: "center",
-            }}
-          >
+          <div className="game-col" id="input-col">
             <InputBar values={numbers} total={NUMBER_LENGTH}></InputBar>
             <NumberPad
               numbers={numbers}
