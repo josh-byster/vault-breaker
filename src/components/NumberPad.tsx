@@ -21,8 +21,7 @@ const NumberPad: React.FC<ContainerProps> = ({
 
   const makeButton = (number: number) => (
     <IonButton
-    className="number"
-    fill="outline"
+      className="number"
       color="primary"
       onClick={() => numberAdded(number)}
       disabled={shouldDisableNumber(number)}
@@ -45,11 +44,19 @@ const NumberPad: React.FC<ContainerProps> = ({
       {makeButton(9)}
       <br />
       {makeButton(0)}
-      <br/>
-      <IonButton color="primary" onClick={backspaceClicked} disabled={numbers.length === 0}>
+      <br />
+      <IonButton
+        color="primary"
+        onClick={backspaceClicked}
+        disabled={numbers.length === 0}
+      >
         {"<"}
       </IonButton>
-      <IonButton color="primary" onClick={submitClicked} disabled={numbers.length < NUMBER_LENGTH}>
+      <IonButton
+        color="primary"
+        onClick={submitClicked}
+        disabled={numbers.length < NUMBER_LENGTH}
+      >
         Submit
       </IonButton>
     </>
