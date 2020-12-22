@@ -1,9 +1,20 @@
 import { Plugins } from "@capacitor/core";
 const { Storage } = Plugins;
 
+interface GameInfo {
+  key: string;
+  value: string;
+}
+
+export interface GameStatistics {
+  time: number;
+  guesses: number;
+  gamesPlayed: number;
+}
+
 const GAME_INFO_KEY = "gameInfo";
 
-const DEFAULT_INFO = {
+const DEFAULT_INFO: GameInfo = {
   key: GAME_INFO_KEY,
   value: JSON.stringify({
     time: 0,
@@ -13,14 +24,14 @@ const DEFAULT_INFO = {
 };
 
 // JSON "set" example
-const logGameplay = async ({
+export const logGameplay = async ({
   time,
   guesses,
 }: {
-  time: Number;
-  guesses: Number;
+  time: number;
+  guesses: number;
 }) => {
-  const prevValues = await getGameInfo();
+  const prevValues = await getInfoOrDefault();
   await Storage.set({
     key: GAME_INFO_KEY,
     value: JSON.stringify({
@@ -29,16 +40,18 @@ const logGameplay = async ({
       gamesPlayed: prevValues.gamesPlayed + 1,
     }),
   });
-  console.log(await getGameInfo());
 };
 
-// JSON "get" example
-const getGameInfo = async () => {
+export const getInfoOrDefault: () => Promise<GameStatistics> = async () => {
   const { value } = await Storage.get({ key: GAME_INFO_KEY });
+  console.log(value);
   if (value !== null) return JSON.parse(value);
 
-  await Storage.set(DEFAULT_INFO);
-  return DEFAULT_INFO;
+  resetGameInfo();
+  console.log("Returning");
+  return JSON.parse(DEFAULT_INFO.value);
 };
 
-export { logGameplay };
+export const resetGameInfo: () => void = async () => {
+  await Storage.set(DEFAULT_INFO);
+};
