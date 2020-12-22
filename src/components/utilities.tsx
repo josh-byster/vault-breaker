@@ -30,5 +30,9 @@ export const generateAnswer = (length: number): number[] => {
     let rand = Math.floor(Math.random() * 10);
     if (arr.indexOf(rand) === -1) arr.push(rand);
   }
+  console.log(`Current game answer is: ${arr.join("")}`)
   return arr;
 };
+
+export const getSecondsElapsed = (startTime: Date) =>
+    ((new Date() as any) - (startTime as any)) / 1000;
