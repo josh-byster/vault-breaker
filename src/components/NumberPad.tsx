@@ -44,20 +44,15 @@ const NumberPad: React.FC<ContainerProps> = ({
       {makeButton(9)}
       <br />
       {makeButton(0)}
-      <br />
+      
+
       <IonButton
         color="primary"
-        onClick={backspaceClicked}
-        disabled={numbers.length === 0}
-      >
-        {"<"}
-      </IonButton>
-      <IonButton
-        color="primary"
+        className="submit"
         onClick={submitClicked}
         disabled={numbers.length < NUMBER_LENGTH}
       >
-        Submit
+        ATTEMPT
       </IonButton>
     </>
   );

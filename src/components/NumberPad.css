@@ -1,6 +1,15 @@
 .number {
-  font-size: 20px;
+  font-size: 25px;
   font-family: "Custom Font";
   font-weight: bold;
   --border-radius: 2px;
+  width: 60px;
+  height: 60px;
+}
+.submit {
+  --border-radius: 2px;
+  height: 60px;
+  width: 124px;
+  font-weight: bold;
+  font-size: 18px;
 }
