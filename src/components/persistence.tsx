@@ -1,26 +1,31 @@
 import { Plugins } from "@capacitor/core";
 const { Storage } = Plugins;
 
-interface GameInfo {
-  key: string;
-  value: string;
-}
+const GAME_INFO_KEY = "gameInfo";
 
+type GameInfo = { key: string; value: string };
 export interface GameStatistics {
   time: number;
   guesses: number;
   gamesPlayed: number;
+  fastestWin: number;
+  dayStarted: Date;
+  lowestGuessCount: number;
+  highestGuessCount: number;
 }
 
-const GAME_INFO_KEY = "gameInfo";
-
+const DEFAULT_STATISTICS: GameStatistics = {
+  time: 0,
+  guesses: 0,
+  gamesPlayed: 0,
+  fastestWin: 0,
+  dayStarted: new Date(),
+  lowestGuessCount: 0,
+  highestGuessCount: 0,
+};
 const DEFAULT_INFO: GameInfo = {
   key: GAME_INFO_KEY,
-  value: JSON.stringify({
-    time: 0,
-    guesses: 0,
-    gamesPlayed: 0,
-  }),
+  value: JSON.stringify(DEFAULT_STATISTICS),
 };
 
 // JSON "set" example
@@ -32,13 +37,26 @@ export const logGameplay = async ({
   guesses: number;
 }) => {
   const prevValues = await getInfoOrDefault();
+  const newValues: GameStatistics = {
+    time: prevValues.time + time,
+    guesses: prevValues.guesses + guesses,
+    gamesPlayed: prevValues.gamesPlayed + 1,
+    fastestWin:
+      prevValues.fastestWin !== 0
+        ? time > 0.1
+          ? Math.min(prevValues.fastestWin, time)
+          : prevValues.fastestWin
+        : time,
+    dayStarted: prevValues.dayStarted,
+    lowestGuessCount:
+      prevValues.lowestGuessCount !== 0
+        ? Math.min(prevValues.lowestGuessCount, guesses)
+        : guesses,
+    highestGuessCount: Math.max(prevValues.highestGuessCount, guesses),
+  };
   await Storage.set({
     key: GAME_INFO_KEY,
-    value: JSON.stringify({
-      time: prevValues.time + time,
-      guesses: prevValues.guesses + guesses,
-      gamesPlayed: prevValues.gamesPlayed + 1,
-    }),
+    value: JSON.stringify(newValues),
   });
 };
 
@@ -48,10 +66,9 @@ export const getInfoOrDefault: () => Promise<GameStatistics> = async () => {
   if (value !== null) return JSON.parse(value);
 
   resetGameInfo();
-  console.log("Returning");
   return JSON.parse(DEFAULT_INFO.value);
 };
 
-export const resetGameInfo: () => void = async () => {
-  await Storage.set(DEFAULT_INFO);
+export const resetGameInfo: () => Promise<any> = async () => {
+  return Storage.set(DEFAULT_INFO);
 };

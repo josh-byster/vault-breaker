@@ -1,6 +1,6 @@
 import React from "react";
 import GameController from "../components/GameController";
-import "./Tab1.css";
+import "./Home.css";
 
 const Tab1: React.FC = () => {
   return <GameController />;

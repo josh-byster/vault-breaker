@@ -24,17 +24,20 @@
 }
 
 .game-col {
-  width: 50%;
   height: 100%;
   display: inline-block;
   vertical-align: top;
 }
 
 #guess-list-col {
+  width: 50%;
   padding-right: 20px;
   overflow-y: scroll;
 }
 
+#input-col {
+  width: 50%;
+}
 #input-col {
   text-align: center;
 }
