@@ -1,8 +1,8 @@
-import { IonButton } from "@ionic/react";
+import { IonButton, IonIcon } from "@ionic/react";
 import React from "react";
 import { NUMBER_LENGTH } from "./constants";
 import "./NumberPad.css";
-
+import { backspaceOutline, lockOpen } from "ionicons/icons";
 interface ContainerProps {
   numberAdded: (number: number) => void;
   backspaceClicked: () => void;
@@ -43,16 +43,23 @@ const NumberPad: React.FC<ContainerProps> = ({
       {makeButton(8)}
       {makeButton(9)}
       <br />
-      {makeButton(0)}
-      
 
       <IonButton
-        color="primary"
+        className="submit"
+        onClick={backspaceClicked}
+        disabled={numbers.length === 0}
+        color="secondary"
+      >
+        <IonIcon icon={backspaceOutline}></IonIcon>
+      </IonButton>
+      {makeButton(0)}
+      <IonButton
         className="submit"
         onClick={submitClicked}
         disabled={numbers.length < NUMBER_LENGTH}
+        color="tertiary"
       >
-        ATTEMPT
+        <IonIcon icon={lockOpen}></IonIcon>
       </IonButton>
     </>
   );

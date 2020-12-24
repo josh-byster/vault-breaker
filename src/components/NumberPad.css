@@ -8,8 +8,6 @@
 }
 .submit {
   --border-radius: 2px;
+  width: 60px;
   height: 60px;
-  width: 124px;
-  font-weight: bold;
-  font-size: 18px;
 }
