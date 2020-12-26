@@ -1,0 +1,7 @@
+.hint {
+  display: block;
+  width: 184px;
+  margin: auto;
+  margin-top: 40px;
+  --border-radius: 2px;
+}

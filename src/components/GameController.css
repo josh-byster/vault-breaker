@@ -30,12 +30,12 @@
 }
 
 #guess-list-col {
-  width: 40%;
+  width: 45%;
   overflow-y: scroll;
 }
 
 #input-col {
-  width: 60%;
+  width: 55%;
 }
 #input-col {
   text-align: center;

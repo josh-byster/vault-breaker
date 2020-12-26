@@ -20,6 +20,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { logGameplay } from "./persistence";
+import HintController from "./HintController";
 
 const GameController: React.FC = () => {
   const [numbers, setNumbers] = useState<number[]>([]);
@@ -29,6 +30,7 @@ const GameController: React.FC = () => {
   );
   const [showGameAlert, setShowGameAlert] = useState<boolean>(false);
   const [startTime, setStartTime] = useState<Date>();
+  const [hintsLeft, setHintsLeft] = useState<boolean>(true);
 
   const appendNumber = useCallback(
     (value: number): void => {
@@ -85,6 +87,7 @@ const GameController: React.FC = () => {
     setGuesses([]);
     setAnswer(generateAnswer(NUMBER_LENGTH));
     setStartTime(undefined);
+    setHintsLeft(true);
   };
 
   return (
@@ -123,6 +126,11 @@ const GameController: React.FC = () => {
               backspaceClicked={deleteNumber}
               submitClicked={submitClicked}
             ></NumberPad>
+            <HintController
+              answer={answer}
+              enabled={hintsLeft && guesses.length >= 5}
+              hintUsed={() => setHintsLeft(false)}
+            ></HintController>
           </div>
         </div>
       </IonContent>
