@@ -57,12 +57,12 @@ const GameController: React.FC = () => {
     if (!startTime) {
       setStartTime(curTime);
     }
-    if (numbers.join("") === answer.join("")) {
-      handleWin(startTime || curTime, guesses.length);
-    }
     setGuesses((guesses) => {
       return [...guesses, computeGuessForNumber(numbers, answer)];
     });
+    if (numbers.join("") === answer.join("")) {
+      handleWin(startTime || curTime, guesses.length);
+    }
     clearNumbers();
   }, [numbers, answer, startTime, guesses]);
 
@@ -111,7 +111,7 @@ const GameController: React.FC = () => {
           header={"You Won!"}
           message={`You completed the game in ${getSecondsElapsed(
             startTime!
-          )} seconds and took ${guesses.length + 1} attempts.`}
+          )} seconds and took ${guesses.length} attempts.`}
           buttons={["OK"]}
         />
         <div style={{ height: "100%", paddingTop: "30px" }}>
