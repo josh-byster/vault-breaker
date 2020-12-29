@@ -10,7 +10,7 @@ interface ContainerProps {
 
 const InputBar: React.FC<ContainerProps> = ({ state, total }) => {
   return (
-    <div>
+    <div onClick={state.clearNumbers.bind(state)}>
       {[...Array(total)].map((value, idx) => {
         if (idx < state.numbers.length) {
           return (

@@ -36,9 +36,13 @@ const GameController: React.FC = observer(() => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
+          <IonButtons slot="start">
+            <HintController state={state}></HintController>
+          </IonButtons>
           <IonButtons slot="end">
             <IonButton onClick={resetGame}>New Game</IonButton>
           </IonButtons>
+
           <IonTitle>Vault Breaker</IonTitle>
         </IonToolbar>
       </IonHeader>
@@ -51,7 +55,6 @@ const GameController: React.FC = observer(() => {
           <div className="game-col" id="input-col">
             <InputBar state={state} total={NUMBER_LENGTH}></InputBar>
             <NumberPad state={state}></NumberPad>
-            <HintController state={state}></HintController>
           </div>
         </div>
       </IonContent>

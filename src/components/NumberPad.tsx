@@ -1,7 +1,7 @@
 import { IonButton, IonIcon } from "@ionic/react";
 import React from "react";
 import "./NumberPad.css";
-import { backspaceOutline, lockOpen } from "ionicons/icons";
+import { lockOpen } from "ionicons/icons";
 import { observer } from "mobx-react-lite";
 import { GameState } from "../store/GameState";
 interface ContainerProps {
@@ -33,15 +33,6 @@ const NumberPad: React.FC<ContainerProps> = ({ state }) => {
       {makeButton(8)}
       {makeButton(9)}
       <br />
-
-      <IonButton
-        className="submit"
-        onClick={state.removeLastNumber.bind(state)}
-        disabled={state.backspaceButtonDisabled}
-        color="secondary"
-      >
-        <IonIcon icon={backspaceOutline}></IonIcon>
-      </IonButton>
       {makeButton(0)}
       <IonButton
         className="submit"
