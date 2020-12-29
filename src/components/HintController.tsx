@@ -1,25 +1,14 @@
 import { IonAlert, IonButton } from "@ionic/react";
-import React, { useState, useMemo } from "react";
+import { observer } from "mobx-react-lite";
+import React, { useState } from "react";
 import { GameState } from "../store/GameState";
 import "./HintController.css";
 interface Props {
   state: GameState;
 }
 
-const getDigit = (): number => {
-  return Math.floor(Math.random() * 10);
-};
-
 const HintController: React.FC<Props> = ({ state }) => {
   const [open, setOpen] = useState(false);
-
-  const hintMessage = useMemo((): string => {
-    let randomDigit = getDigit();
-    while (state.answer.indexOf(randomDigit) !== -1) {
-      randomDigit = getDigit();
-    }
-    return `The answer does not contain ${randomDigit}.`;
-  }, [state.answer]);
 
   return (
     <>
@@ -27,7 +16,7 @@ const HintController: React.FC<Props> = ({ state }) => {
         isOpen={open}
         onDidDismiss={() => setOpen(false)}
         header={"Hint"}
-        message={hintMessage}
+        message={state.hintMessage}
         buttons={["OK"]}
       />
       <IonButton
@@ -36,7 +25,7 @@ const HintController: React.FC<Props> = ({ state }) => {
           setOpen(true);
           state.hintsLeft = false;
         }}
-        disabled={!state.hintsLeft || state.guesses.length < 5}
+        disabled={state.hintButtonDisabled}
       >
         Hint
       </IonButton>
@@ -44,4 +33,4 @@ const HintController: React.FC<Props> = ({ state }) => {
   );
 };
 
-export default HintController;
+export default observer(HintController);

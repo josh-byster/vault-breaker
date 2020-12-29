@@ -5,6 +5,7 @@ import { logGameplay } from "../components/persistence";
 import {
   computeGuessForNumber,
   generateAnswer,
+  getDigit,
   getSecondsElapsed,
 } from "../components/utilities";
 
@@ -61,6 +62,33 @@ class GameState {
     if (/\d$/.test(ev.key)) this.addNumber(parseInt(ev.key));
     if (ev.key === "Enter") this.submitClicked();
     if (ev.key === "Backspace") this.removeLastNumber();
+  }
+
+  shouldDisableNumber(number: number) {
+    return (
+      this.numbers.indexOf(number) !== -1 ||
+      this.numbers.length === NUMBER_LENGTH
+    );
+  }
+
+  get submitButtonDisabled() {
+    return this.numbers.length < NUMBER_LENGTH;
+  }
+
+  get backspaceButtonDisabled() {
+    return this.numbers.length === 0;
+  }
+
+  get hintButtonDisabled() {
+    return !this.hintsLeft || this.guesses.length < 5;
+  }
+
+  get hintMessage() {
+    let randomDigit = getDigit();
+    while (this.answer.indexOf(randomDigit) !== -1) {
+      randomDigit = getDigit();
+    }
+    return `The answer does not contain ${randomDigit}.`;
   }
 }
 

@@ -1,6 +1,5 @@
 import { IonButton, IonIcon } from "@ionic/react";
 import React from "react";
-import { NUMBER_LENGTH } from "./constants";
 import "./NumberPad.css";
 import { backspaceOutline, lockOpen } from "ionicons/icons";
 import { observer } from "mobx-react-lite";
@@ -10,16 +9,12 @@ interface ContainerProps {
 }
 
 const NumberPad: React.FC<ContainerProps> = ({ state }) => {
-  const shouldDisableNumber = (number: number) =>
-    state.numbers.indexOf(number) !== -1 ||
-    state.numbers.length === NUMBER_LENGTH;
-
   const makeButton = (number: number) => (
     <IonButton
       className="number"
       color="primary"
       onClick={() => state.addNumber(number)}
-      disabled={shouldDisableNumber(number)}
+      disabled={state.shouldDisableNumber(number)}
     >
       {number}
     </IonButton>
@@ -42,7 +37,7 @@ const NumberPad: React.FC<ContainerProps> = ({ state }) => {
       <IonButton
         className="submit"
         onClick={state.removeLastNumber.bind(state)}
-        disabled={state.numbers.length === 0}
+        disabled={state.backspaceButtonDisabled}
         color="secondary"
       >
         <IonIcon icon={backspaceOutline}></IonIcon>
@@ -51,7 +46,7 @@ const NumberPad: React.FC<ContainerProps> = ({ state }) => {
       <IonButton
         className="submit"
         onClick={state.submitClicked.bind(state)}
-        disabled={state.numbers.length < NUMBER_LENGTH}
+        disabled={state.submitButtonDisabled}
         color="tertiary"
       >
         <IonIcon icon={lockOpen}></IonIcon>

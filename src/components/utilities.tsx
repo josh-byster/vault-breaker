@@ -36,3 +36,7 @@ export const generateAnswer = (length: number): number[] => {
 
 export const getSecondsElapsed = (startTime: Date) =>
     ((new Date() as any) - (startTime as any)) / 1000;
+
+    export const getDigit = (): number => {
+      return Math.floor(Math.random() * 10);
+    };
