@@ -1,4 +1,5 @@
 import { IonAlert, IonButton } from "@ionic/react";
+import { action } from "mobx";
 import { observer } from "mobx-react-lite";
 import React, { useState } from "react";
 import { GameState } from "../store/GameState";
@@ -15,7 +16,7 @@ const HintController: React.FC<Props> = ({ state }) => {
       <IonAlert
         isOpen={open}
         onDidDismiss={() => setOpen(false)}
-        header={"Hint"}
+        header="Hint"
         message={state.hintMessage}
         buttons={["OK"]}
       />
@@ -23,7 +24,7 @@ const HintController: React.FC<Props> = ({ state }) => {
         className="hint"
         onClick={() => {
           setOpen(true);
-          state.hintsLeft = false;
+          action(() => (state.hintsLeft = false));
         }}
         disabled={state.hintButtonDisabled}
       >
