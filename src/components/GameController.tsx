@@ -4,9 +4,7 @@ import { GuessList } from "./GuessList";
 import InputBar from "./InputBar";
 import NumberPad from "./NumberPad";
 import { NUMBER_LENGTH } from "./constants";
-import { getSecondsElapsed } from "./utilities";
 import {
-  IonAlert,
   IonButton,
   IonButtons,
   IonContent,
@@ -18,7 +16,7 @@ import {
 import HintController from "./HintController";
 import { observer } from "mobx-react-lite";
 import { GameState } from "../store/GameState";
-import { action } from "mobx";
+import WinAlert from "./WinAlert";
 
 const GameController: React.FC = observer(() => {
   const [state, setGameState] = useState(() => new GameState());
@@ -45,25 +43,13 @@ const GameController: React.FC = observer(() => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen forceOverscroll={false}>
-        <IonAlert
-          isOpen={state.showGameAlert}
-          onDidDismiss={() => {
-            action(() => (state.showGameAlert = false));
-            resetGame();
-          }}
-          cssClass="my-custom-class"
-          header={"You Won!"}
-          message={`You completed the game in ${getSecondsElapsed(
-            state.startTime!
-          )} seconds and took ${state.guesses.length} attempts.`}
-          buttons={["OK"]}
-        />
-        <div style={{ height: "100%", paddingTop: "30px" }}>
+        <WinAlert state={state} resetGame={resetGame} />
+        <div className="content-body">
           <div className="game-col" id="guess-list-col">
-            <GuessList items={state.guesses}></GuessList>
+            <GuessList state={state}></GuessList>
           </div>
           <div className="game-col" id="input-col">
-            <InputBar values={state.numbers} total={NUMBER_LENGTH}></InputBar>
+            <InputBar state={state} total={NUMBER_LENGTH}></InputBar>
             <NumberPad state={state}></NumberPad>
             <HintController state={state}></HintController>
           </div>

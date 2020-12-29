@@ -1,20 +1,21 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
+import { GameState } from "../store/GameState";
 import "./InputBar.css";
 
 interface ContainerProps {
-  values: number[];
+  state: GameState;
   total: number;
 }
 
-const InputBar: React.FC<ContainerProps> = ({ values, total }) => {
+const InputBar: React.FC<ContainerProps> = ({ state, total }) => {
   return (
     <div>
       {[...Array(total)].map((value, idx) => {
-        if (idx < values.length) {
+        if (idx < state.numbers.length) {
           return (
             <span key={idx} className="number-value">
-              {values[idx]}
+              {state.numbers[idx]}
             </span>
           );
         }

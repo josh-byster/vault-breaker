@@ -38,10 +38,11 @@ class GameState {
   private handleWin() {
     logGameplay({
       time: getSecondsElapsed(this.startTime!),
-      guesses: this.guesses.length + 1,
+      guesses: this.guesses.length,
     });
     this.showGameAlert = true;
   }
+
   submitClicked() {
     if (this.numbers.length !== NUMBER_LENGTH) return;
     this.guesses.push(computeGuessForNumber(this.numbers, this.answer));

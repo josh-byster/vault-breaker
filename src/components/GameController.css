@@ -40,3 +40,8 @@
 #input-col {
   text-align: center;
 }
+
+.content-body {
+  height: 100%;
+  padding-top: 30px;
+}
