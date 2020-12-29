@@ -1,26 +1,25 @@
 import { IonAlert, IonButton } from "@ionic/react";
-import React, { FC, useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
+import { GameState } from "../store/GameState";
 import "./HintController.css";
 interface Props {
-  answer: number[];
-  enabled: boolean;
-  hintUsed: () => void;
+  state: GameState;
 }
 
 const getDigit = (): number => {
   return Math.floor(Math.random() * 10);
 };
 
-const HintController: React.FC<Props> = ({ answer, enabled, hintUsed }) => {
+const HintController: React.FC<Props> = ({ state }) => {
   const [open, setOpen] = useState(false);
 
   const hintMessage = useMemo((): string => {
     let randomDigit = getDigit();
-    while (answer.indexOf(randomDigit) !== -1) {
+    while (state.answer.indexOf(randomDigit) !== -1) {
       randomDigit = getDigit();
     }
     return `The answer does not contain ${randomDigit}.`;
-  }, [answer]);
+  }, [state.answer]);
 
   return (
     <>
@@ -35,9 +34,9 @@ const HintController: React.FC<Props> = ({ answer, enabled, hintUsed }) => {
         className="hint"
         onClick={() => {
           setOpen(true);
-          hintUsed();
+          state.hintsLeft = false;
         }}
-        disabled={!enabled}
+        disabled={!state.hintsLeft || state.guesses.length < 5}
       >
         Hint
       </IonButton>

@@ -3,27 +3,22 @@ import React from "react";
 import { NUMBER_LENGTH } from "./constants";
 import "./NumberPad.css";
 import { backspaceOutline, lockOpen } from "ionicons/icons";
+import { observer } from "mobx-react-lite";
+import { GameState } from "../store/GameState";
 interface ContainerProps {
-  numberAdded: (number: number) => void;
-  backspaceClicked: () => void;
-  submitClicked: () => void;
-  numbers: number[];
+  state: GameState;
 }
 
-const NumberPad: React.FC<ContainerProps> = ({
-  numberAdded,
-  backspaceClicked,
-  submitClicked,
-  numbers,
-}) => {
+const NumberPad: React.FC<ContainerProps> = ({ state }) => {
   const shouldDisableNumber = (number: number) =>
-    numbers.indexOf(number) !== -1 || numbers.length === NUMBER_LENGTH;
+    state.numbers.indexOf(number) !== -1 ||
+    state.numbers.length === NUMBER_LENGTH;
 
   const makeButton = (number: number) => (
     <IonButton
       className="number"
       color="primary"
-      onClick={() => numberAdded(number)}
+      onClick={() => state.addNumber(number)}
       disabled={shouldDisableNumber(number)}
     >
       {number}
@@ -46,8 +41,8 @@ const NumberPad: React.FC<ContainerProps> = ({
 
       <IonButton
         className="submit"
-        onClick={backspaceClicked}
-        disabled={numbers.length === 0}
+        onClick={state.removeLastNumber.bind(state)}
+        disabled={state.numbers.length === 0}
         color="secondary"
       >
         <IonIcon icon={backspaceOutline}></IonIcon>
@@ -55,8 +50,8 @@ const NumberPad: React.FC<ContainerProps> = ({
       {makeButton(0)}
       <IonButton
         className="submit"
-        onClick={submitClicked}
-        disabled={numbers.length < NUMBER_LENGTH}
+        onClick={state.submitClicked.bind(state)}
+        disabled={state.numbers.length < NUMBER_LENGTH}
         color="tertiary"
       >
         <IonIcon icon={lockOpen}></IonIcon>
@@ -65,4 +60,4 @@ const NumberPad: React.FC<ContainerProps> = ({
   );
 };
 
-export default NumberPad;
+export default observer(NumberPad);

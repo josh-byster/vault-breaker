@@ -1,3 +1,4 @@
+import { observer } from "mobx-react-lite";
 import React from "react";
 import "./InputBar.css";
 
@@ -27,4 +28,4 @@ const InputBar: React.FC<ContainerProps> = ({ values, total }) => {
   );
 };
 
-export default InputBar;
+export default observer(InputBar);
