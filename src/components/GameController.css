@@ -35,7 +35,11 @@
 }
 
 #input-col {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: flex-end;
   width: 55%;
+  padding-bottom: 30px;
 }
 #input-col {
   text-align: center;

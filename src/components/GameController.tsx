@@ -53,8 +53,12 @@ const GameController: React.FC = observer(() => {
             <GuessList state={state}></GuessList>
           </div>
           <div className="game-col" id="input-col">
-            <InputBar state={state} total={NUMBER_LENGTH}></InputBar>
-            <NumberPad state={state}></NumberPad>
+            <div>
+              <InputBar state={state} total={NUMBER_LENGTH}></InputBar>
+            </div>
+            <div>
+              <NumberPad state={state}></NumberPad>
+            </div>
           </div>
         </div>
       </IonContent>

@@ -1,5 +1,6 @@
 .number-value {
-  font-size: 30px;
+  font-size: 50px;
   font-family: "Custom Font";
-  margin: 0px 5px;
+  margin: 50px 5px;
+  display: inline-block;
 }
