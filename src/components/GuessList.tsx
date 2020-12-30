@@ -24,6 +24,7 @@ const GuessList: React.FC<ListProps> = observer(({ state }) => {
       messagesEndRef.current!.scrollIntoView({
         behavior: "smooth",
         block: "end",
+        inline: "nearest",
       });
     }
   };
@@ -36,7 +37,7 @@ const GuessList: React.FC<ListProps> = observer(({ state }) => {
       {state.guesses.slice().map((item, idx) => (
         <GuessListItem item={item} idx={idx + 1} key={idx}></GuessListItem>
       ))}
-      <div ref={messagesEndRef} />
+      <div ref={messagesEndRef} id="scroll-fix" />
     </IonList>
   );
 });
