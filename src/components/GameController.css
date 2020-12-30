@@ -27,10 +27,17 @@
   height: 100%;
   display: inline-block;
   vertical-align: top;
+  padding-bottom: 30px;
 }
 
 #guess-list-col {
   width: 45%;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+#guess-list-col > ion-list {
   overflow-y: scroll;
 }
 
@@ -39,8 +46,8 @@
   flex-direction: column;
   justify-content: flex-end;
   width: 55%;
-  padding-bottom: 30px;
 }
+
 #input-col {
   text-align: center;
 }
