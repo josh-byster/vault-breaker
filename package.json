@@ -29,7 +29,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "eslint --ignore-path .gitignore --fix 'src/**/*.{jsx,tsx,js,ts}'"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -47,7 +48,13 @@
     ]
   },
   "devDependencies": {
-    "@capacitor/cli": "2.4.5"
+    "@capacitor/cli": "2.4.5",
+    "husky": "^4.3.6"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint"
+    }
   },
   "description": "An Ionic project"
 }

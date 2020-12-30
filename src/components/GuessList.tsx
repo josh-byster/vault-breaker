@@ -1,5 +1,5 @@
 import { IonList } from "@ionic/react";
-import { action, autorun, reaction } from "mobx";
+import { reaction } from "mobx";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useRef } from "react";
 import { GameState } from "../store/GameState";
@@ -28,6 +28,7 @@ const GuessList: React.FC<ListProps> = observer(({ state }) => {
     }
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => reaction(() => state.guesses.length, scrollIntoView), []);
 
   return (
