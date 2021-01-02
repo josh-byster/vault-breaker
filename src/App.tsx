@@ -34,31 +34,41 @@ import "@ionic/react/css/display.css";
 /* Theme variables */
 import "./theme/variables.css";
 import ServiceWorkerWrapper from "./components/ServiceWorkerWrapper";
+import { GameStatisticsService } from "./components/persistence";
+
+const statisticsService = new GameStatisticsService();
+export const StatisticsContext = React.createContext(statisticsService);
 
 const App: React.FC = () => (
-  <IonApp>
-    <ServiceWorkerWrapper />
-    <IonReactRouter>
-      <IonTabs>
-        <IonRouterOutlet>
-          <Route path="/home" component={HomePage} exact={true} />
-          <Route path="/stats" component={StatsPanel} exact={true} />
-          <Route path="/tab3" component={Tab3} />
-          <Route path="/" render={() => <Redirect to="/home" />} exact={true} />
-        </IonRouterOutlet>
-        <IonTabBar slot="bottom">
-          <IonTabButton tab="home" href="/home">
-            <IonIcon icon={triangle} />
-            <IonLabel>Game</IonLabel>
-          </IonTabButton>
-          <IonTabButton tab="stats" href="/stats">
-            <IonIcon icon={ellipse} />
-            <IonLabel>Stats</IonLabel>
-          </IonTabButton>
-        </IonTabBar>
-      </IonTabs>
-    </IonReactRouter>
-  </IonApp>
+  <StatisticsContext.Provider value={statisticsService}>
+    <IonApp>
+      <ServiceWorkerWrapper />
+      <IonReactRouter>
+        <IonTabs>
+          <IonRouterOutlet>
+            <Route path="/home" component={HomePage} exact={true} />
+            <Route path="/stats" component={StatsPanel} exact={true} />
+            <Route path="/tab3" component={Tab3} />
+            <Route
+              path="/"
+              render={() => <Redirect to="/home" />}
+              exact={true}
+            />
+          </IonRouterOutlet>
+          <IonTabBar slot="bottom">
+            <IonTabButton tab="home" href="/home">
+              <IonIcon icon={triangle} />
+              <IonLabel>Game</IonLabel>
+            </IonTabButton>
+            <IonTabButton tab="stats" href="/stats">
+              <IonIcon icon={ellipse} />
+              <IonLabel>Stats</IonLabel>
+            </IonTabButton>
+          </IonTabBar>
+        </IonTabs>
+      </IonReactRouter>
+    </IonApp>
+  </StatisticsContext.Provider>
 );
 
 export default App;

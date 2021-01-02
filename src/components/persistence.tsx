@@ -5,8 +5,6 @@ const { Storage } = Plugins;
 const log = logger("persistence");
 const GAME_INFO_KEY = "gameInfo";
 
-type GameInfo = { key: string; value: string };
-
 export interface GameStatistics {
   time: number;
   guesses: number;
@@ -27,75 +25,87 @@ const DEFAULT_STATISTICS: GameStatistics = {
   highestGuessCount: 0,
 };
 
-const DEFAULT_INFO: GameInfo = {
-  key: GAME_INFO_KEY,
-  value: JSON.stringify(DEFAULT_STATISTICS),
-};
-
-export const logGameplay = async ({
-  time,
-  guesses,
-}: {
+interface GameStatisticsDTO {
   time: number;
   guesses: number;
-}) => {
-  const prevValues = await getGameStatistics();
+}
+export class GameStatisticsService {
+  private statisticsDAO: GameStatisticsDAO;
 
-  const newStats: GameStatistics = {
-    time: prevValues.time + time,
-    guesses: prevValues.guesses + guesses,
-    gamesPlayed: prevValues.gamesPlayed + 1,
-    fastestWin: computeFastestWin(prevValues.fastestWin, time),
-    dayStarted: prevValues.dayStarted,
-    lowestGuessCount: computeMinGuessCount(
-      prevValues.lowestGuessCount,
-      guesses
-    ),
-    highestGuessCount: Math.max(prevValues.highestGuessCount, guesses),
-  };
-
-  setGameStatistics(newStats);
-};
-
-export const getGameStatistics: () => Promise<GameStatistics> = async () => {
-  const { value } = await Storage.get({ key: GAME_INFO_KEY });
-  log("Loaded current statistics: %o", value !== null && JSON.parse(value));
-
-  if (value !== null) return JSON.parse(value);
-
-  resetGameInfo();
-  return JSON.parse(DEFAULT_INFO.value);
-};
-
-export const resetGameInfo: () => Promise<any> = async () => {
-  log("Resetting storage to default: %o", DEFAULT_INFO);
-  return Storage.set(DEFAULT_INFO);
-};
-
-const setGameStatistics = async (stats: GameStatistics) => {
-  log("Setting new statistics: ", stats);
-  await Storage.set({
-    key: GAME_INFO_KEY,
-    value: JSON.stringify(stats),
-  });
-};
-
-const computeFastestWin = (prevFastestTime: number, currGameTime: number) => {
-  if (prevFastestTime === 0) {
-    return currGameTime;
+  constructor(dao = new GameStatisticsDAO()) {
+    log("Instantiating GameStatisticsService");
+    this.statisticsDAO = dao;
   }
-  if (currGameTime > 0.1) {
-    return Math.min(prevFastestTime, currGameTime);
-  }
-  return prevFastestTime;
-};
 
-const computeMinGuessCount = (
-  oldLowestGuessCount: number,
-  curGuessCount: number
-) => {
-  if (oldLowestGuessCount === 0) {
-    return curGuessCount;
+  public async logGameplay({ time, guesses }: GameStatisticsDTO) {
+    const prevValues = await this.getStatistics();
+
+    const newStats: GameStatistics = {
+      time: prevValues.time + time,
+      guesses: prevValues.guesses + guesses,
+      gamesPlayed: prevValues.gamesPlayed + 1,
+      fastestWin: this.computeFastestWin(prevValues.fastestWin, time),
+      dayStarted: prevValues.dayStarted,
+      lowestGuessCount: this.computeMinGuessCount(
+        prevValues.lowestGuessCount,
+        guesses
+      ),
+      highestGuessCount: Math.max(prevValues.highestGuessCount, guesses),
+    };
+
+    this.statisticsDAO.set(newStats);
   }
-  return Math.min(oldLowestGuessCount, curGuessCount);
-};
+
+  public async getStatistics(): Promise<GameStatistics> {
+    const values = await this.statisticsDAO.get();
+    if (values !== null) {
+      return values;
+    }
+    return this.resetStatistics();
+  }
+
+  public async resetStatistics(): Promise<GameStatistics> {
+    log("Resetting statistics to defaults");
+    await this.statisticsDAO.set(DEFAULT_STATISTICS);
+    return DEFAULT_STATISTICS;
+  }
+
+  private computeFastestWin(prevTime: number, currTime: number) {
+    if (prevTime === 0) {
+      return currTime;
+    }
+    if (currTime > 0.1) {
+      return Math.min(prevTime, currTime);
+    }
+    return prevTime;
+  }
+
+  private computeMinGuessCount(prevCount: number, curCount: number) {
+    if (prevCount === 0) {
+      return curCount;
+    }
+    return Math.min(prevCount, curCount);
+  }
+}
+
+class GameStatisticsDAO {
+  public async get(): Promise<GameStatistics | null> {
+    const { value } = await Storage.get({ key: GAME_INFO_KEY });
+
+    if (value === null) {
+      log("No statistics exist in storage.");
+      return null;
+    }
+
+    log("Loaded current statistics: %o", JSON.parse(value));
+    return JSON.parse(value);
+  }
+
+  public async set(stats: GameStatistics) {
+    log("Setting new statistics: ", stats);
+    await Storage.set({
+      key: GAME_INFO_KEY,
+      value: JSON.stringify(stats),
+    });
+  }
+}

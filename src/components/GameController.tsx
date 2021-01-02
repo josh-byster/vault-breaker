@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import "./GameController.css";
 import { GuessList } from "./GuessList";
 import InputBar from "./InputBar";
@@ -17,9 +17,13 @@ import HintController from "./HintController";
 import { observer } from "mobx-react-lite";
 import { GameState } from "../store/GameState";
 import WinAlert from "./WinAlert";
+import { StatisticsContext } from "../App";
 
 const GameController: React.FC = observer(() => {
-  const [state, setGameState] = useState(() => new GameState());
+  const statisticsService = useContext(StatisticsContext);
+  const [state, setGameState] = useState(
+    () => new GameState(statisticsService)
+  );
 
   useEffect(() => {
     document.addEventListener("keydown", state.handleKeyboardEvent.bind(state));
@@ -29,7 +33,7 @@ const GameController: React.FC = observer(() => {
   }, [state]);
 
   const resetGame = () => {
-    setGameState(new GameState());
+    setGameState(new GameState(statisticsService));
   };
 
   return (

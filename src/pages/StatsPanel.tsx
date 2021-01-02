@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   IonBadge,
   IonButton,
@@ -14,24 +14,20 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import "./StatsPanel.css";
-import {
-  GameStatistics,
-  getGameStatistics,
-  resetGameInfo,
-} from "../components/persistence";
+import { GameStatistics } from "../components/persistence";
+import { StatisticsContext } from "../App";
 
 const Tab2: React.FC = () => {
+  const statisticsService = useContext(StatisticsContext);
   const [stats, setStats] = useState<GameStatistics>();
 
-  async function fetchData() {
-    setStats(await getGameStatistics());
-  }
-
-  useIonViewWillEnter(fetchData);
+  useIonViewWillEnter(async () => {
+    console.log("Running!");
+    setStats(await statisticsService.getStatistics());
+  });
 
   const resetButtonClicked = async () => {
-    await resetGameInfo();
-    fetchData();
+    setStats(await statisticsService.resetStatistics());
   };
   return (
     <IonPage>

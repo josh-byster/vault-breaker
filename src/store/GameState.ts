@@ -1,7 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { NUMBER_LENGTH } from "../components/constants";
 import { Guess } from "../components/GuessList";
-import { logGameplay } from "../components/persistence";
 import {
   computeGuessForNumber,
   generateAnswer,
@@ -9,6 +8,7 @@ import {
   getSecondsElapsed,
 } from "../components/utilities";
 import log from "debug";
+import { GameStatisticsService } from "../components/persistence";
 const logState = log("state");
 class GameState {
   numbers: number[] = [];
@@ -17,10 +17,12 @@ class GameState {
   showGameAlert: boolean = false;
   startTime: Date | undefined;
   hintsLeft: boolean = true;
+  private statisticsService: GameStatisticsService;
 
-  constructor() {
+  constructor(statisticsService: GameStatisticsService) {
     makeAutoObservable(this);
     this.answer = generateAnswer(NUMBER_LENGTH);
+    this.statisticsService = statisticsService;
   }
 
   addNumber(n: number) {
@@ -41,7 +43,7 @@ class GameState {
   }
 
   private handleWin() {
-    logGameplay({
+    this.statisticsService.logGameplay({
       time: getSecondsElapsed(this.startTime!),
       guesses: this.guesses.length,
     });
