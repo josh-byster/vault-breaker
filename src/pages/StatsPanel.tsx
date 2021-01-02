@@ -16,7 +16,7 @@ import {
 import "./StatsPanel.css";
 import {
   GameStatistics,
-  getInfoOrDefault,
+  getGameStatistics,
   resetGameInfo,
 } from "../components/persistence";
 
@@ -24,7 +24,7 @@ const Tab2: React.FC = () => {
   const [stats, setStats] = useState<GameStatistics>();
 
   async function fetchData() {
-    setStats(await getInfoOrDefault());
+    setStats(await getGameStatistics());
   }
 
   useIonViewWillEnter(fetchData);

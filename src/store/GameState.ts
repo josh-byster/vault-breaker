@@ -8,7 +8,8 @@ import {
   getDigit,
   getSecondsElapsed,
 } from "../components/utilities";
-
+import log from "debug";
+const logState = log("state");
 class GameState {
   numbers: number[] = [];
   guesses: Guess[] = [];
@@ -25,15 +26,18 @@ class GameState {
   addNumber(n: number) {
     if (this.numbers.length < NUMBER_LENGTH) {
       this.numbers.push(n);
+      logState("Added number %d", n);
     }
   }
 
   clearNumbers() {
     this.numbers = [];
+    logState("Cleared numbers.");
   }
 
   removeLastNumber() {
     this.numbers = this.numbers.slice(0, -1);
+    logState("Removed last number");
   }
 
   private handleWin() {
@@ -45,6 +49,7 @@ class GameState {
   }
 
   submitClicked() {
+    logState("Handling submit clicked.");
     if (this.numbers.length !== NUMBER_LENGTH) return;
     this.guesses.push(computeGuessForNumber(this.numbers, this.answer));
     if (this.guesses.length === 1) {
@@ -57,6 +62,7 @@ class GameState {
   }
 
   handleKeyboardEvent(ev: globalThis.KeyboardEvent) {
+    logState("Received keyboard event %o", ev.key);
     if (ev.repeat) return;
     if (this.numbers.indexOf(parseInt(ev.key)) !== -1) return;
     if (/\d$/.test(ev.key)) this.addNumber(parseInt(ev.key));
@@ -84,6 +90,7 @@ class GameState {
   }
 
   get hintMessage() {
+    logState("Retrieving hint message.");
     let randomDigit = getDigit();
     while (this.answer.indexOf(randomDigit) !== -1) {
       randomDigit = getDigit();
