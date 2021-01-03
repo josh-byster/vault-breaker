@@ -22,7 +22,6 @@ const Tab2: React.FC = () => {
   const [stats, setStats] = useState<GameStatistics>();
 
   useIonViewWillEnter(async () => {
-    console.log("Running!");
     setStats(await statisticsService.getStatistics());
   });
 

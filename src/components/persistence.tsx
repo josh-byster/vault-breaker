@@ -15,7 +15,7 @@ export interface GameStatistics {
   highestGuessCount: number;
 }
 
-const DEFAULT_STATISTICS: GameStatistics = {
+export const DEFAULT_STATISTICS: GameStatistics = {
   time: 0,
   guesses: 0,
   gamesPlayed: 0,
@@ -37,14 +37,17 @@ export class GameStatisticsService {
     this.statisticsDAO = dao;
   }
 
-  public async logGameplay({ time, guesses }: GameStatisticsDTO) {
+  public async logGameplay({
+    time,
+    guesses,
+  }: GameStatisticsDTO): Promise<GameStatistics> {
     const prevValues = await this.getStatistics();
 
     const newStats: GameStatistics = {
       time: prevValues.time + time,
       guesses: prevValues.guesses + guesses,
       gamesPlayed: prevValues.gamesPlayed + 1,
-      fastestWin: this.computeFastestWin(prevValues.fastestWin, time),
+      fastestWin: this.computeFastestWin(prevValues.fastestWin, time, guesses),
       dayStarted: prevValues.dayStarted,
       lowestGuessCount: this.computeMinGuessCount(
         prevValues.lowestGuessCount,
@@ -53,7 +56,8 @@ export class GameStatisticsService {
       highestGuessCount: Math.max(prevValues.highestGuessCount, guesses),
     };
 
-    this.statisticsDAO.set(newStats);
+    await this.statisticsDAO.set(newStats);
+    return newStats;
   }
 
   public async getStatistics(): Promise<GameStatistics> {
@@ -70,11 +74,15 @@ export class GameStatisticsService {
     return DEFAULT_STATISTICS;
   }
 
-  private computeFastestWin(prevTime: number, currTime: number) {
+  private computeFastestWin(
+    prevTime: number,
+    currTime: number,
+    guesses: number
+  ) {
     if (prevTime === 0) {
       return currTime;
     }
-    if (currTime > 0.1) {
+    if (guesses > 1) {
       return Math.min(prevTime, currTime);
     }
     return prevTime;
@@ -84,11 +92,12 @@ export class GameStatisticsService {
     if (prevCount === 0) {
       return curCount;
     }
+
     return Math.min(prevCount, curCount);
   }
 }
 
-class GameStatisticsDAO {
+export class GameStatisticsDAO {
   public async get(): Promise<GameStatistics | null> {
     const { value } = await Storage.get({ key: GAME_INFO_KEY });
 
@@ -98,7 +107,7 @@ class GameStatisticsDAO {
     }
 
     log("Loaded current statistics: %o", JSON.parse(value));
-    return JSON.parse(value);
+    return JSON.parse(value, this.reviver);
   }
 
   public async set(stats: GameStatistics) {
@@ -107,5 +116,9 @@ class GameStatisticsDAO {
       key: GAME_INFO_KEY,
       value: JSON.stringify(stats),
     });
+  }
+
+  private reviver(key: string, value: string) {
+    return key === "dayStarted" ? new Date(value) : value;
   }
 }

@@ -25,6 +25,7 @@
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
     "react-scripts": "3.4.0",
+    "sinon": "^9.2.2",
     "typescript": "3.8.3"
   },
   "scripts": {
@@ -51,6 +52,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "2.4.5",
+    "@types/sinon": "^9.0.10",
     "husky": "^4.3.6"
   },
   "husky": {
