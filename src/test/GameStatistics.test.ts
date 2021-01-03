@@ -2,53 +2,47 @@ import {
   GameStatisticsService,
   GameStatisticsDAO,
   DEFAULT_STATISTICS,
+  GameStatistics,
 } from "../components/persistence";
-import {
-  assert,
-  createStubInstance,
-  match,
-  SinonStub,
-  SinonStubbedInstance,
-  stub,
-} from "sinon";
+import { assert, createStubInstance, SinonStubbedInstance } from "sinon";
 import { Plugins } from "@capacitor/core";
 const { Storage } = Plugins;
 
 describe("Game statistics service", () => {
-  let theService: GameStatisticsService;
-  let theDAO: SinonStubbedInstance<GameStatisticsDAO>;
+  let service: GameStatisticsService;
+  let dao: SinonStubbedInstance<GameStatisticsDAO>;
   beforeEach(() => {
-    theDAO = createStubInstance(GameStatisticsDAO);
-    theService = new GameStatisticsService(theDAO);
+    dao = createStubInstance(GameStatisticsDAO);
+    service = new GameStatisticsService(dao);
   });
 
   test("Calls get on DAO upon getting statistics", () => {
-    theService.getStatistics();
+    service.getStatistics();
 
-    assert.calledOnce(theDAO.get);
+    assert.calledOnce(dao.get);
   });
 
   test("Calls set on DAO upon setting statistics", async () => {
-    theDAO.get.returns(Promise.resolve(DEFAULT_STATISTICS));
+    dao.get.returns(Promise.resolve(DEFAULT_STATISTICS));
 
-    await theService.logGameplay({ time: 0, guesses: 0 });
+    await service.logGameplay({ time: 0, guesses: 0 });
 
-    assert.calledOnce(theDAO.get);
-    assert.calledOnce(theDAO.set);
+    assert.calledOnce(dao.get);
+    assert.calledOnce(dao.set);
   });
 
   test("Returns default statistics when DAO returns empty state", async () => {
-    theDAO.get.returns(Promise.resolve(null));
+    dao.get.returns(Promise.resolve(null));
 
-    const returnValue = await theService.getStatistics();
+    const returnValue = await service.getStatistics();
 
     expect(returnValue).toEqual(DEFAULT_STATISTICS);
   });
 
   test("Correctly computes basic result on next iteration", async () => {
-    theDAO.get.returns(Promise.resolve(DEFAULT_STATISTICS));
+    dao.get.returns(Promise.resolve(DEFAULT_STATISTICS));
 
-    const returnValue = await theService.logGameplay({ time: 2, guesses: 5 });
+    const returnValue = await service.logGameplay({ time: 2, guesses: 5 });
 
     expect(returnValue).toMatchObject({
       time: 2,
@@ -62,11 +56,9 @@ describe("Game statistics service", () => {
   });
 
   test("Does not update fastest win if win on first guess", async () => {
-    theDAO.get.returns(
-      Promise.resolve({ ...DEFAULT_STATISTICS, fastestWin: 5 })
-    );
+    dao.get.returns(Promise.resolve({ ...DEFAULT_STATISTICS, fastestWin: 5 }));
 
-    const returnValue = await theService.logGameplay({
+    const returnValue = await service.logGameplay({
       time: 0.01,
       guesses: 1,
     });
@@ -75,14 +67,14 @@ describe("Game statistics service", () => {
   });
 
   test("Correctly sets min guess count", async () => {
-    theDAO.get.returns(
+    dao.get.returns(
       Promise.resolve({
         ...DEFAULT_STATISTICS,
         lowestGuessCount: 5,
       })
     );
 
-    const returnValue = await theService.logGameplay({
+    const returnValue = await service.logGameplay({
       time: 2,
       guesses: 3,
     });
@@ -91,14 +83,14 @@ describe("Game statistics service", () => {
   });
 
   test("Correctly sets max guess count", async () => {
-    theDAO.get.returns(
+    dao.get.returns(
       Promise.resolve({
         ...DEFAULT_STATISTICS,
         highestGuessCount: 7,
       })
     );
 
-    const returnValue = await theService.logGameplay({
+    const returnValue = await service.logGameplay({
       time: 2,
       guesses: 8,
     });
@@ -108,42 +100,41 @@ describe("Game statistics service", () => {
 });
 
 describe("Statistics DAO", () => {
-  let theDAO: GameStatisticsDAO;
-  let theGetStub: SinonStub;
-  let theSetStub: SinonStub;
+  let dao: GameStatisticsDAO;
   beforeEach(() => {
-    theGetStub = stub(Storage, "get");
-    theSetStub = stub(Storage, "set");
-    theDAO = new GameStatisticsDAO();
+    dao = new GameStatisticsDAO();
   });
 
   afterEach(() => {
-    theGetStub.restore();
-    theSetStub.restore();
+    Storage.clear();
   });
 
   test("Correctly sets with default statistics", async () => {
-    await theDAO.set(DEFAULT_STATISTICS);
+    await dao.set(DEFAULT_STATISTICS);
 
-    assert.calledOnceWithMatch(
-      theSetStub,
-      match({ key: match.any, value: JSON.stringify(DEFAULT_STATISTICS) })
-    );
+    const result = await dao.get();
+
+    expect(result).toEqual(DEFAULT_STATISTICS);
   });
 
   test("Returns null if no values are set", async () => {
-    theGetStub.returns({ value: null });
-
-    const returnValue = await theDAO.get();
+    const returnValue = await dao.get();
 
     expect(returnValue).toEqual(null);
   });
 
-  test("Returns a parsed version of the results", async () => {
-    theGetStub.returns({ value: JSON.stringify(DEFAULT_STATISTICS) });
+  test("Correctly sets and gets a non-default statistic", async () => {
+    const customObject: GameStatistics = { ...DEFAULT_STATISTICS, time: 1 };
 
-    const returnValue = await theDAO.get();
+    await dao.set(customObject);
+    const returnValue = await dao.get();
 
-    expect(returnValue).toEqual(DEFAULT_STATISTICS);
+    expect(returnValue).toEqual(customObject);
+  });
+
+  test("Is idempotent for getting values", async () => {
+    await dao.set(DEFAULT_STATISTICS);
+
+    expect(await dao.get()).toEqual(await dao.get());
   });
 });

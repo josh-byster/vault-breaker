@@ -107,7 +107,9 @@ export class GameStatisticsDAO {
     }
 
     log("Loaded current statistics: %o", JSON.parse(value));
-    return JSON.parse(value, this.reviver);
+    return JSON.parse(value, (key, value) =>
+      key === "dayStarted" ? new Date(value) : value
+    );
   }
 
   public async set(stats: GameStatistics) {
@@ -116,9 +118,5 @@ export class GameStatisticsDAO {
       key: GAME_INFO_KEY,
       value: JSON.stringify(stats),
     });
-  }
-
-  private reviver(key: string, value: string) {
-    return key === "dayStarted" ? new Date(value) : value;
   }
 }
