@@ -1,4 +1,4 @@
-import { Guess } from "./GuessList";
+import { Guess } from "../components/GuessList";
 import log from "debug";
 
 const logGuess = log("guess");

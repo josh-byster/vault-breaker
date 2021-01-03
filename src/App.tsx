@@ -34,7 +34,7 @@ import "@ionic/react/css/display.css";
 /* Theme variables */
 import "./theme/variables.css";
 import ServiceWorkerWrapper from "./components/ServiceWorkerWrapper";
-import { GameStatisticsService } from "./components/persistence";
+import { GameStatisticsService } from "./services/persistence";
 
 const statisticsService = new GameStatisticsService();
 export const StatisticsContext = React.createContext(statisticsService);

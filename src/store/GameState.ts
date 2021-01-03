@@ -6,9 +6,9 @@ import {
   generateAnswer,
   getDigit,
   getSecondsElapsed,
-} from "../components/utilities";
+} from "../utilities/utilities";
 import log from "debug";
-import { GameStatisticsService } from "../components/persistence";
+import { GameStatisticsService } from "../services/persistence";
 const logState = log("state");
 class GameState {
   numbers: number[] = [];

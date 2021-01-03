@@ -14,7 +14,7 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import "./StatsPanel.css";
-import { GameStatistics } from "../components/persistence";
+import { GameStatistics } from "../services/persistence";
 import { StatisticsContext } from "../App";
 
 const Tab2: React.FC = () => {

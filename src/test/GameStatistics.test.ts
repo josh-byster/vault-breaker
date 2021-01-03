@@ -3,7 +3,7 @@ import {
   GameStatisticsDAO,
   DEFAULT_STATISTICS,
   GameStatistics,
-} from "../components/persistence";
+} from "../services/persistence";
 import { assert, createStubInstance, SinonStubbedInstance } from "sinon";
 import { Plugins } from "@capacitor/core";
 const { Storage } = Plugins;

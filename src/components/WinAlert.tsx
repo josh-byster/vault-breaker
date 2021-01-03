@@ -2,7 +2,7 @@ import { observer } from "mobx-react-lite";
 import React from "react";
 import { IonAlert } from "@ionic/react";
 import { GameState } from "../store/GameState";
-import { getSecondsElapsed } from "./utilities";
+import { getSecondsElapsed } from "../utilities/utilities";
 
 interface Props {
   state: GameState;
