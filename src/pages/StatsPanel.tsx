@@ -16,18 +16,22 @@ import {
 import "./StatsPanel.css";
 import { GameStatistics } from "../services/persistence";
 import { StatisticsContext } from "../App";
+import ResetStatsAlert from "../components/ResetStatsAlert";
 
 const Tab2: React.FC = () => {
   const statisticsService = useContext(StatisticsContext);
   const [stats, setStats] = useState<GameStatistics>();
+  const [shouldShowResetAlert, showResetAlert] = useState<boolean>(false);
 
   useIonViewWillEnter(async () => {
     setStats(await statisticsService.getStatistics());
   });
 
-  const resetButtonClicked = async () => {
+  const resetStatistics = async () => {
+    showResetAlert(false);
     setStats(await statisticsService.resetStatistics());
   };
+
   return (
     <IonPage>
       <IonHeader translucent>
@@ -91,9 +95,17 @@ const Tab2: React.FC = () => {
               </IonItem>
             </>
           )}
-          <IonButton className="reset-button" onClick={resetButtonClicked}>
+          <IonButton
+            className="reset-button"
+            onClick={() => showResetAlert(true)}
+          >
             Reset
           </IonButton>
+          <ResetStatsAlert
+            isOpen={shouldShowResetAlert}
+            onDismiss={() => showResetAlert(false)}
+            resetHandler={resetStatistics}
+          />
         </IonList>
       </IonContent>
     </IonPage>
