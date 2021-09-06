@@ -46,6 +46,7 @@
   flex-direction: column;
   justify-content: flex-end;
   width: 55%;
+  padding-right: 20px;
 }
 
 #input-col {
