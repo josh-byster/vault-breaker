@@ -7,36 +7,12 @@
   --border-radius: 2px;
   width: 60px;
   height: 60px;
-  margin: 4px 2px;
-  background-color: rgb(56, 128, 255);
-  color: white;
-
-  border-radius: 2px;
 }
-
-.shadow {
-  box-shadow: 0px 4px 4px 0px rgb(0 0 0 / 20%);
-}
-.number:disabled {
-  background-color: rgb(161, 189, 247);
-}
-.number:hover:enabled {
-  background-color: rgb(86, 140, 248);
-}
-
-.submit:disabled {
-  background-color: rgb(202, 86, 248, 0.5);
-}
-
 .submit {
-  background-color: rgb(202, 86, 248);
-  color: white;
-  border-radius: 2px;
-  width: 125px;
+  --border-radius: 2px;
+  width: 123px;
   height: 60px;
-  /* font-size: 25px; */
-  margin: 4px 2px;
-  font-size: 45px;
-  font-family: "Custom Font";
-  font-weight: bold;
+  --padding-start: 0px;
+  --padding-end: 0px;
+  font-size: 25px;
 }

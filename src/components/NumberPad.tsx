@@ -1,4 +1,4 @@
-import { IonIcon } from "@ionic/react";
+import { IonButton, IonIcon } from "@ionic/react";
 import React from "react";
 import "./NumberPad.css";
 import { lockOpen } from "ionicons/icons";
@@ -10,14 +10,14 @@ interface ContainerProps {
 
 const NumberPad: React.FC<ContainerProps> = ({ state }) => {
   const makeButton = (number: number) => (
-    <button
-      className="number shadow"
+    <IonButton
+      className="number"
       color="primary"
       onClick={() => state.addNumber(number)}
       disabled={state.shouldDisableNumber(number)}
     >
       {number}
-    </button>
+    </IonButton>
   );
   return (
     <>
@@ -34,13 +34,14 @@ const NumberPad: React.FC<ContainerProps> = ({ state }) => {
       {makeButton(9)}
       <br />
       {makeButton(0)}
-      <button
-        className="submit shadow"
+      <IonButton
+        className="submit"
         onClick={state.submitClicked.bind(state)}
         disabled={state.submitButtonDisabled}
+        color="tertiary"
       >
-        <IonIcon icon={lockOpen} style={{ height: "30px" }}></IonIcon>
-      </button>
+        <IonIcon icon={lockOpen}></IonIcon>
+      </IonButton>
     </>
   );
 };
