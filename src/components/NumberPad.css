@@ -5,14 +5,52 @@
   font-family: "Custom Font";
   font-weight: bold;
   --border-radius: 2px;
-  width: 60px;
-  height: 60px;
+  flex: 0 30%;
+  height: 50px;
+  margin-bottom: 5%; /* (100-30*3)/2 */
+  margin-left: 0;
+  background-color: rgb(56, 128, 255);
+  color: white;
+
+  border-radius: 2px;
 }
+
+button {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.shadow {
+  box-shadow: 0px 4px 4px 0px rgb(0 0 0 / 20%);
+}
+.number:disabled {
+  background-color: rgb(161, 189, 247);
+}
+.number:hover:enabled {
+  background-color: rgb(86, 140, 248);
+}
+
+.submit:disabled {
+  background-color: rgb(202, 86, 248, 0.5);
+}
+
 .submit {
-  --border-radius: 2px;
-  width: 123px;
-  height: 60px;
-  --padding-start: 0px;
-  --padding-end: 0px;
-  font-size: 25px;
+  background-color: rgb(202, 86, 248);
+  color: white;
+  border-radius: 2px;
+  /* width: 60%; */
+  flex: 0 65%;
+  margin: 0;
+  height: 50px;
+  /* font-size: 25px; */
+  /* margin: 4px 2px; */
+  font-size: 45px;
+  font-family: "Custom Font";
+  font-weight: bold;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 }
