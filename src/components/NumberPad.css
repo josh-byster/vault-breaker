@@ -8,11 +8,16 @@
   flex: 0 30%;
   height: 50px;
   margin-bottom: 5%; /* (100-30*3)/2 */
-  margin-left:0;
+  margin-left: 0;
   background-color: rgb(56, 128, 255);
   color: white;
 
   border-radius: 2px;
+}
+
+button {
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .shadow {
@@ -35,7 +40,7 @@
   border-radius: 2px;
   /* width: 60%; */
   flex: 0 65%;
-  margin:0;
+  margin: 0;
   height: 50px;
   /* font-size: 25px; */
   /* margin: 4px 2px; */
