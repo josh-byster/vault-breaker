@@ -6,7 +6,7 @@
   font-weight: bold;
   --border-radius: 2px;
   flex: 0 30%;
-  height: 50px;
+  height: 60px;
   margin-bottom: 5%; /* (100-30*3)/2 */
   margin-left: 0;
   background-color: rgb(56, 128, 255);
