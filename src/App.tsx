@@ -10,6 +10,7 @@ import {
   IonTabs,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
+import { setupIonicReact } from '@ionic/react';
 import { ellipse, triangle } from "ionicons/icons";
 import HomePage from "./pages/Home";
 import StatsPanel from "./pages/StatsPanel";
@@ -39,6 +40,7 @@ import { GameStatisticsService } from "./services/persistence";
 const statisticsService = new GameStatisticsService();
 export const StatisticsContext = React.createContext(statisticsService);
 
+setupIonicReact();
 const App: React.FC = () => (
   <StatisticsContext.Provider value={statisticsService}>
     <IonApp>

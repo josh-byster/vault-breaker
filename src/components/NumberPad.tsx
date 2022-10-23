@@ -11,6 +11,7 @@ interface ContainerProps {
 const NumberPad: React.FC<ContainerProps> = ({ state }) => {
   const makeButton = (number: number) => (
     <button
+      key={number}
       className="number shadow"
       color="primary"
       onClick={() => state.addNumber(number)}
