@@ -1,6 +1,6 @@
 {
-  "name": "myApp",
-  "version": "0.0.1",
+  "name": "vaultbreaker",
+  "version": "0.0.2",
   "private": true,
   "dependencies": {
     "@capacitor/app": "4.1.0",
