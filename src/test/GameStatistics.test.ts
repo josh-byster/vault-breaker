@@ -5,8 +5,7 @@ import {
   GameStatistics,
 } from "../services/persistence";
 import { assert, createStubInstance, SinonStubbedInstance } from "sinon";
-import { Plugins } from "@capacitor/core";
-const { Storage } = Plugins;
+import { Preferences } from "@capacitor/preferences";
 
 describe("Game statistics service", () => {
   let service: GameStatisticsService;
@@ -106,7 +105,7 @@ describe("Statistics DAO", () => {
   });
 
   afterEach(() => {
-    Storage.clear();
+    Preferences.clear();
   });
 
   test("Correctly sets with default statistics", async () => {

@@ -1,6 +1,5 @@
-import { Plugins } from "@capacitor/core";
+import { Preferences } from "@capacitor/preferences";
 import logger from "debug";
-const { Storage } = Plugins;
 
 const log = logger("persistence");
 const GAME_INFO_KEY = "gameInfo";
@@ -99,7 +98,7 @@ export class GameStatisticsService {
 
 export class GameStatisticsDAO {
   public async get(): Promise<GameStatistics | null> {
-    const { value } = await Storage.get({ key: GAME_INFO_KEY });
+    const { value } = await Preferences.get({ key: GAME_INFO_KEY });
 
     if (value === null) {
       log("No statistics exist in storage.");
@@ -114,7 +113,7 @@ export class GameStatisticsDAO {
 
   public async set(stats: GameStatistics) {
     log("Setting new statistics: ", stats);
-    await Storage.set({
+    await Preferences.set({
       key: GAME_INFO_KEY,
       value: JSON.stringify(stats),
     });
