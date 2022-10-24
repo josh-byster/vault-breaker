@@ -1,8 +1,8 @@
-import React, { FC, useEffect } from "react";
+import React, { useEffect } from "react";
 import { IonAlert } from "@ionic/react";
-import * as serviceWorker from "../serviceWorker";
+import * as serviceWorker from "../serviceWorkerRegistration";
 
-const ServiceWorkerWrapper: React.FC = () => {
+const ServiceWorkerWrapper = () => {
   const [showReload, setShowReload] = React.useState(false);
   const [
     waitingWorker,
