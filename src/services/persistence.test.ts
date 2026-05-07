@@ -3,6 +3,7 @@ import {
   GameStatisticsDAO,
   DEFAULT_STATISTICS,
   GameStatistics,
+  STREAK_THRESHOLD,
 } from "./persistence";
 import { createStubInstance, SinonStubbedInstance } from "sinon";
 
@@ -115,6 +116,9 @@ describe("GameStatisticsService - edge cases", () => {
     const result = await service.resetStatistics();
     expect(result.gamesPlayed).toBe(0);
     expect(result.time).toBe(0);
+    expect(result.currentStreak).toBe(0);
+    expect(result.bestStreak).toBe(0);
+    expect(result.fastestByGuessCount).toEqual({});
     expect(dao.set.calledOnce).toBe(true);
   });
 
@@ -137,5 +141,161 @@ describe("GameStatisticsService - edge cases", () => {
     const result = await service.getStatistics();
     expect(result.gamesPlayed).toBe(42);
     expect(result.time).toBe(500);
+  });
+
+  it("getStatistics fills in missing fields from defaults (backward compat)", async () => {
+    const oldStats = {
+      time: 100,
+      guesses: 50,
+      gamesPlayed: 10,
+      fastestWin: 5,
+      dayStarted: new Date("2024-01-01"),
+      lowestGuessCount: 4,
+      highestGuessCount: 8,
+    } as GameStatistics;
+    dao.get.returns(Promise.resolve(oldStats));
+
+    const result = await service.getStatistics();
+    expect(result.currentStreak).toBe(0);
+    expect(result.bestStreak).toBe(0);
+    expect(result.fastestByGuessCount).toEqual({});
+    expect(result.gamesPlayed).toBe(10);
+  });
+});
+
+describe("GameStatisticsService - streak tracking", () => {
+  let service: GameStatisticsService;
+  let dao: SinonStubbedInstance<GameStatisticsDAO>;
+
+  beforeEach(() => {
+    dao = createStubInstance(GameStatisticsDAO);
+    service = new GameStatisticsService(dao);
+  });
+
+  it("increments streak when guesses are within threshold", async () => {
+    dao.get.returns(Promise.resolve({ ...DEFAULT_STATISTICS, currentStreak: 3 }));
+
+    const result = await service.logGameplay({ time: 10, guesses: STREAK_THRESHOLD });
+    expect(result.currentStreak).toBe(4);
+  });
+
+  it("resets streak when guesses exceed threshold", async () => {
+    dao.get.returns(Promise.resolve({ ...DEFAULT_STATISTICS, currentStreak: 10 }));
+
+    const result = await service.logGameplay({ time: 10, guesses: STREAK_THRESHOLD + 1 });
+    expect(result.currentStreak).toBe(0);
+  });
+
+  it("starts streak from 0 on first qualifying game", async () => {
+    dao.get.returns(Promise.resolve(DEFAULT_STATISTICS));
+
+    const result = await service.logGameplay({ time: 10, guesses: 4 });
+    expect(result.currentStreak).toBe(1);
+  });
+
+  it("updates bestStreak when current exceeds it", async () => {
+    dao.get.returns(
+      Promise.resolve({ ...DEFAULT_STATISTICS, currentStreak: 5, bestStreak: 5 })
+    );
+
+    const result = await service.logGameplay({ time: 10, guesses: 4 });
+    expect(result.currentStreak).toBe(6);
+    expect(result.bestStreak).toBe(6);
+  });
+
+  it("preserves bestStreak when current streak breaks", async () => {
+    dao.get.returns(
+      Promise.resolve({ ...DEFAULT_STATISTICS, currentStreak: 3, bestStreak: 10 })
+    );
+
+    const result = await service.logGameplay({ time: 10, guesses: STREAK_THRESHOLD + 1 });
+    expect(result.currentStreak).toBe(0);
+    expect(result.bestStreak).toBe(10);
+  });
+
+  it("does not update bestStreak when current is lower", async () => {
+    dao.get.returns(
+      Promise.resolve({ ...DEFAULT_STATISTICS, currentStreak: 2, bestStreak: 15 })
+    );
+
+    const result = await service.logGameplay({ time: 10, guesses: 4 });
+    expect(result.currentStreak).toBe(3);
+    expect(result.bestStreak).toBe(15);
+  });
+
+  it("handles streak at exact threshold boundary", async () => {
+    dao.get.returns(Promise.resolve({ ...DEFAULT_STATISTICS, currentStreak: 0 }));
+
+    const atThreshold = await service.logGameplay({ time: 10, guesses: STREAK_THRESHOLD });
+    expect(atThreshold.currentStreak).toBe(1);
+  });
+
+  it("handles streak one above threshold boundary", async () => {
+    dao.get.returns(Promise.resolve({ ...DEFAULT_STATISTICS, currentStreak: 5 }));
+
+    const aboveThreshold = await service.logGameplay({ time: 10, guesses: STREAK_THRESHOLD + 1 });
+    expect(aboveThreshold.currentStreak).toBe(0);
+  });
+});
+
+describe("GameStatisticsService - fastest by guess count", () => {
+  let service: GameStatisticsService;
+  let dao: SinonStubbedInstance<GameStatisticsDAO>;
+
+  beforeEach(() => {
+    dao = createStubInstance(GameStatisticsDAO);
+    service = new GameStatisticsService(dao);
+  });
+
+  it("records first time for a guess count", async () => {
+    dao.get.returns(Promise.resolve(DEFAULT_STATISTICS));
+
+    const result = await service.logGameplay({ time: 8.5, guesses: 4 });
+    expect(result.fastestByGuessCount[4]).toBe(8.5);
+  });
+
+  it("updates time when new time is faster", async () => {
+    dao.get.returns(
+      Promise.resolve({ ...DEFAULT_STATISTICS, fastestByGuessCount: { 4: 10 } })
+    );
+
+    const result = await service.logGameplay({ time: 7, guesses: 4 });
+    expect(result.fastestByGuessCount[4]).toBe(7);
+  });
+
+  it("does not update time when new time is slower", async () => {
+    dao.get.returns(
+      Promise.resolve({ ...DEFAULT_STATISTICS, fastestByGuessCount: { 4: 5 } })
+    );
+
+    const result = await service.logGameplay({ time: 12, guesses: 4 });
+    expect(result.fastestByGuessCount[4]).toBe(5);
+  });
+
+  it("tracks separate records for different guess counts", async () => {
+    dao.get.returns(
+      Promise.resolve({ ...DEFAULT_STATISTICS, fastestByGuessCount: { 4: 5 } })
+    );
+
+    const result = await service.logGameplay({ time: 12, guesses: 6 });
+    expect(result.fastestByGuessCount[4]).toBe(5);
+    expect(result.fastestByGuessCount[6]).toBe(12);
+  });
+
+  it("preserves all existing records when adding new one", async () => {
+    dao.get.returns(
+      Promise.resolve({
+        ...DEFAULT_STATISTICS,
+        fastestByGuessCount: { 4: 5, 5: 8, 6: 11 },
+      })
+    );
+
+    const result = await service.logGameplay({ time: 15, guesses: 7 });
+    expect(result.fastestByGuessCount).toEqual({ 4: 5, 5: 8, 6: 11, 7: 15 });
+  });
+
+  it("resets fastestByGuessCount on statistics reset", async () => {
+    const result = await service.resetStatistics();
+    expect(result.fastestByGuessCount).toEqual({});
   });
 });

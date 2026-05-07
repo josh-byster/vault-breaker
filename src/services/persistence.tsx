@@ -4,6 +4,8 @@ import logger from "debug";
 const log = logger("persistence");
 const GAME_INFO_KEY = "gameInfo";
 
+export const STREAK_THRESHOLD = 5;
+
 export interface GameStatistics {
   time: number;
   guesses: number;
@@ -12,6 +14,9 @@ export interface GameStatistics {
   dayStarted: Date;
   lowestGuessCount: number;
   highestGuessCount: number;
+  currentStreak: number;
+  bestStreak: number;
+  fastestByGuessCount: Record<number, number>;
 }
 
 export const DEFAULT_STATISTICS: GameStatistics = {
@@ -22,6 +27,9 @@ export const DEFAULT_STATISTICS: GameStatistics = {
   dayStarted: new Date(),
   lowestGuessCount: 0,
   highestGuessCount: 0,
+  currentStreak: 0,
+  bestStreak: 0,
+  fastestByGuessCount: {},
 };
 
 interface GameStatisticsDTO {
@@ -42,6 +50,16 @@ export class GameStatisticsService {
   }: GameStatisticsDTO): Promise<GameStatistics> {
     const prevValues = await this.getStatistics();
 
+    const currentStreak =
+      guesses <= STREAK_THRESHOLD ? prevValues.currentStreak + 1 : 0;
+
+    const prevFastest = prevValues.fastestByGuessCount[guesses];
+    const fastestByGuessCount = {
+      ...prevValues.fastestByGuessCount,
+      [guesses]:
+        prevFastest !== undefined ? Math.min(prevFastest, time) : time,
+    };
+
     const newStats: GameStatistics = {
       time: prevValues.time + time,
       guesses: prevValues.guesses + guesses,
@@ -53,6 +71,9 @@ export class GameStatisticsService {
         guesses
       ),
       highestGuessCount: Math.max(prevValues.highestGuessCount, guesses),
+      currentStreak,
+      bestStreak: Math.max(prevValues.bestStreak, currentStreak),
+      fastestByGuessCount,
     };
 
     await this.statisticsDAO.set(newStats);
@@ -62,7 +83,7 @@ export class GameStatisticsService {
   public async getStatistics(): Promise<GameStatistics> {
     const values = await this.statisticsDAO.get();
     if (values !== null) {
-      return values;
+      return { ...DEFAULT_STATISTICS, ...values };
     }
     return this.resetStatistics();
   }
