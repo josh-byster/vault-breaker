@@ -68,10 +68,13 @@ class GameState {
   handleKeyboardEvent(ev: globalThis.KeyboardEvent) {
     logState("Received keyboard event %o", ev.key);
     if (ev.repeat) return;
-    if (this.numbers.indexOf(parseInt(ev.key)) !== -1) return;
-    if (/\d$/.test(ev.key)) this.addNumber(parseInt(ev.key));
-    if (ev.key === "Enter") this.submitClicked();
-    if (ev.key === "Backspace") this.removeLastNumber();
+    if (/^\d$/.test(ev.key)) {
+      this.addNumber(parseInt(ev.key));
+    } else if (ev.key === "Enter") {
+      this.submitClicked();
+    } else if (ev.key === "Backspace") {
+      this.removeLastNumber();
+    }
   }
 
   shouldDisableNumber(number: number) {

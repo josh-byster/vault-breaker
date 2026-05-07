@@ -26,9 +26,10 @@ const GameController: React.FC = observer(() => {
   );
 
   useEffect(() => {
-    document.addEventListener("keydown", state.handleKeyboardEvent.bind(state));
+    const handler = state.handleKeyboardEvent.bind(state);
+    document.addEventListener("keydown", handler);
     return () => {
-      document.removeEventListener("keydown", state.handleKeyboardEvent);
+      document.removeEventListener("keydown", handler);
     };
   }, [state]);
 
