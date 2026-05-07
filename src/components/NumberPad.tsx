@@ -9,23 +9,28 @@ interface ContainerProps {
 }
 
 const NumberPad: React.FC<ContainerProps> = ({ state }) => {
-  const makeButton = (number: number) => (
-    <button
-      key={number}
-      className="number shadow"
-      color="primary"
-      onClick={() => state.addNumber(number)}
-      disabled={state.shouldDisableNumber(number)}
-    >
-      {number}
-    </button>
-  );
+  const makeButton = (number: number) => {
+    const trigger = () => state.addNumber(number);
+    return (
+      <button
+        key={number}
+        className="number shadow"
+        color="primary"
+        onClick={trigger}
+        onPointerUp={trigger}
+        disabled={state.shouldDisableNumber(number)}
+      >
+        {number}
+      </button>
+    );
+  };
   return (
     <div className="grid">
       {[1,2,3,4,5,6,7,8,9,0].map(x => makeButton(x))}
       <button
         className="submit shadow"
         onClick={state.submitClicked.bind(state)}
+        onPointerUp={state.submitClicked.bind(state)}
         disabled={state.submitButtonDisabled}
       >
         <IonIcon icon={lockOpen} style={{ height: "30px" }}></IonIcon>

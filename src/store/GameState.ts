@@ -26,6 +26,8 @@ class GameState {
   }
 
   addNumber(n: number) {
+    // Idempotent: handler may fire from both onPointerUp and onClick on iOS
+    if (this.numbers.indexOf(n) !== -1) return;
     if (this.numbers.length < NUMBER_LENGTH) {
       this.numbers.push(n);
       logState("Added number %d", n);
